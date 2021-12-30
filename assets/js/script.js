@@ -49,7 +49,7 @@ $(".list-group").on("click", "p", function(){
   var text = $(this)
   .text()
   .trim();
-  console.log(this);
+
 
   var textInput = $("<textarea>")
   .addClass("form-control")
@@ -58,7 +58,7 @@ $(".list-group").on("click", "p", function(){
   $(this).replaceWith(textInput);
 
   textInput.trigger("focus");
-});
+
 
 $(".list-group").on("blur", "textarea", function() {
 
@@ -89,7 +89,7 @@ $(".list-group").on("blur", "textarea", function() {
   // replace textarea with p element
   $(this).replaceWith(taskP);
 
-
+});
 });
 
 // due date was clicked
@@ -110,7 +110,6 @@ $(".list-group").on("click", "span", function() {
 
   // automatically focus on new element
   dateInput.trigger("focus");
-});
 
 // value of due date was changed
 $(".list-group").on("blur", "input[type='text']", function() {
@@ -141,7 +140,9 @@ $(".list-group").on("blur", "input[type='text']", function() {
 
   // replace input with span element
   $(this).replaceWith(taskSpan);
+  });
 });
+
 
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function() {
@@ -186,7 +187,70 @@ $("#remove-tasks").on("click", function() {
   saveTasks();
 });
 
+
+$(".card .list-group").sortable({
+  connectWidth: $(".card .list-group"),
+  scroll: false,
+  tolerance: "pointer",
+  helper: "clone",
+  activate: function(event) {
+    console.log("activate", this);
+
+  },
+  deactivate: function(event) {
+    console.log("deactivate", this);
+  },
+  over: function(event) {
+    console.log("over", event.target);
+  },
+  out: function(event) {
+    console.log("out", event.target);
+  },
+  update: function(event) {
+    // loop over current set of children in sortable list
+    $(this).children().each(function(){
+      console.log($(this));
+    });
+
+    var tempArr = [];
+    $(this).children().each(function(){
+      var text = $(this)
+      .find("p")
+      .text()
+      .trim();
+
+      var date = $(this)
+      .find("span")
+      .text()
+      .trim();
+
+      tempArr.push({
+        text: text,
+        date: date
+      });
+    });
+    var arrName = $(this)
+    .attr("id")
+    .replace("list-","");
+
+    tasks[arrName] = tempArr;
+    saveTasks();
+  }
+});
+
+$("#trash").droppable({
+  accept: ".card .list-group-item",
+  tolerance: "touch",
+  drop: function(event,ui) {
+    ui.draggable.remove();
+  },
+  over: function(event, ui) {
+    console.log("over");
+  },
+  out: function(event, ui) {
+    console.log("out");
+  }
+});
+
 // load tasks for the first time
 loadTasks();
-
-
